@@ -1,33 +1,117 @@
-# AutoValue Pro: Optimización de Estrategia de Precios para el Mercado de Ocasión mediante Regresión Avanzada.
+# Modelado de Tasación Automotriz: Mercado Alemán (AutoScout24)
 
-1. Elección de temática y obtención de datos
+Este proyecto desarrolla un sistema de inteligencia artificial capaz de tasar vehículos de ocasión con alta precisión en el mercado alemán.
 
-### Enfoque
+## 📋 Descripción del problema
 
-    Se ha seleccionado un dataset robusto para resolver un desafío crítico en el sector Automotive Retail.
+El objetivo es resolver la falta de estandarización y el error humano en la valoración de vehículos de segunda mano. Se busca proporcionar a plataformas de compraventa y profesionales del sector una herramienta automática que prediga el precio de mercado de forma rápida y fundamentada, minimizando el riesgo financiero en cada operación.
 
-### Problemática de "negocio"
+## 📊 Dataset utilizado
 
-    El mercado de coches de segunda mano es altamente volátil. Un concesionario digital (estilo AutoScout24 o Clicars) se enfrenta al reto de tasar vehículos de forma competitiva y rápida. Si el precio es muy alto, el coche se queda "cogiendo polvo" en el inventario; si es muy bajo, se pierde margen de beneficio. El objetivo es crear un modelo de tasación automática que minimice el error humano y maximice el ROI (Retorno de Inversión) al adquirir y vender stock.
-
-### Datasets seleccionados
-
-    - autoscout24-germany-dataset. Contiene datos reales de ofertas de vehículos en el mercado alemán (referente europeo), con variables técnicas críticas como potencia (hp), kilometraje (mileage), marca, modelo y tipo de cambio.
+* 
+**Origen:** El dataset contiene datos públicos extraídos de **AutoScout24 Germany**.
 
 
-2. Validación de datos y planteamiento del problema
-
-El dataset cuenta con miles de registros (más de 46.000 en las versiones estándar de este CSV), lo que garantiza volumen suficiente para el entrenamiento. El formato es un CSV limpio y estructurado, listo para el procesamiento con Pandas.
-
-Disponemos de 9 variables de entrada de alto impacto.
-
-Numéricas: mileage, hp, year.
-
-Categóricas: make, model, fuel, gear, offertype.
-
-El precio de un coche no se deprecia de forma lineal. La interacción entre la marca (prestigio), el tipo de combustible (etiquetas medioambientales) y el kilometraje crea un escenario de correlaciones no lineales que el Machine Learning puede capturar mucho mejor que una simple tabla de Excel o una media aritmética.
-
-Variable Objetivo (Target): price. Se trata de un problema de Aprendizaje Supervisado - Regresión, ya que buscamos predecir un valor numérico continuo (Euros).
+* 
+**Descripción:** Incluye más de 46,000 registros con variables críticas como caballos de fuerza (CV), kilometraje, marca, modelo, tipo de combustible y año de matriculación.
 
 
-Métrica de Éxito: Se propone el MAE (Mean Absolute Error) para que el negocio entienda fácilmente la desviación media en euros de cada tasación.
+* 
+**Acceso:** El conjunto de datos procesado se carga mediante archivos `.pk` o `.joblib` desde el directorio de datos del proyecto.
+
+
+
+## 💡 Solución adoptada
+
+Se ha seguido un enfoque de **aprendizaje supervisado (regresión)** comparando diversos algoritmos:
+
+1. 
+**Baseline:** Regresión Lineal para establecer el punto de partida técnico.
+
+
+2. 
+**Benchmarking:** Se evaluaron modelos de Árboles de Decisión, Random Forest, KNN y Gradient Boosting .
+
+
+3. 
+**Optimización:** Tras un proceso de ingeniería de variables (creación de `gama_marca` y `antigüedad`) y ajuste de hiperparámetros mediante `RandomizedSearchCV`, se seleccionó **Gradient Boosting** como modelo final.
+
+
+* 
+**Criterio de selección:** Se priorizó el **MAE (Error Medio Absoluto)** más bajo para garantizar la máxima precisión monetaria en cada tasación individual.
+
+
+
+
+## 📁 Estructura del repositorio
+
+```text
+├── src/                # El directorio source que contiene el resto de carpetas
+│   ├── data_sample/    # Archivos de datos de muestra (máx. 5MB) que permitan ejecutar el código
+│   │   ├──processed/   #Archivos procesados tras el EDA
+│   │   ├──raw/             #Archivos datasets originales para poder iniciar el EDA
+│   ├── img/            # Imágenes utilizadas en el proyecto
+│   ├── models/         # Modelos guardados en formato pickle o joblib
+│   ├── notebooks/      # Notebooks de desarrollo y pruebas
+│   ├── utils/          # Módulos, funciones auxiliares o clases creadas para el proyecto
+├── main.ipynb          # Notebook final: claro, conciso y bien estructurado
+├── Presentacion.pdf    # Documento soporte de la exposición en vídeo
+├── README.md           # Fichero README resumen del proyecto
+
+```
+
+## 🛠️ Tecnologías utilizadas
+
+* 
+**Lenguaje:** Python 3.13.8 
+
+
+* **Librerías principales:**
+* 
+`Pandas` y `NumPy`: Manipulación y limpieza de datos.
+
+
+* 
+`Scikit-learn`: Entrenamiento, evaluación y optimización de modelos de ML .
+
+
+* 
+`Joblib`: Persistencia de modelos y carga de datos.
+
+
+* 
+`Matplotlib` y `Seaborn`: Visualización de datos y análisis de importancia de variables.
+
+
+
+
+
+## 🚀 Instrucciones de reproducción
+
+1. Clona este repositorio.
+2. Instala las dependencias: `pip install -r requirements.txt`.
+3. Ejecuta el notebook principal `main.ipynb` ubicado en la carpeta `notebooks/`.
+
+
+4. El modelo final se generará y guardará automáticamente en `src/models/`.
+
+
+
+## 📈 Principales resultados
+
+El modelo final optimizado ha demostrado un rendimiento excepcional comparado con el punto de partida:
+
+* 
+**Baseline (Regresión Lineal):** MAE de **4.541,99 €** [$R^2 = 0.7670$].
+
+
+* 
+**Modelo Final (Gradient Boosting):** MAE de **1.773,92 €** [$R^2 = 0.8919$].
+
+
+* 
+**Mejora:** Reducción del error de tasación en un **60.9%** respecto al baseline.
+
+
+
+**Conclusión clave:** La potencia (CV) y la categoría de la marca (`gama_marca`) son los predictores más potentes del precio en el mercado alemán. El modelo es altamente fiable para vehículos de hasta 100.000 €, presentando ligeras desviaciones en el segmento de hiper-lujo debido a la exclusividad de dichos activos.
